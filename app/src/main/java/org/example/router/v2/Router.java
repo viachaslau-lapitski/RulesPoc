@@ -14,4 +14,19 @@ public class Router {
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime lastUpdatedTs;
+
+    public String evaluate(Order order) {
+//        if (omsRouteOverride != null) {
+//            return omsRouteOverride;
+//        }
+
+        // Sort rules by priority
+        // rules.sort(Comparator.comparingInt(Rule::getPriority));
+        for (Rule rule : rules) {
+            if (rule.matches(order)) {
+                return rule.getOmsRoute();
+            }
+        }
+        return defaultOmsRoute != null ? defaultOmsRoute : "DefaultOMS";
+    }
 }

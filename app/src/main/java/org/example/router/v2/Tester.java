@@ -12,17 +12,44 @@ public class Tester {
     }
 
     public void test1() {
-        Order order = Order.builder().cusip("hello").build();
-        System.out.println(order);
-        System.out.println(order.getCusip());
-    }
-
-    public void test2() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         try {
             Router router = objectMapper.readValue(json, Router.class);
             System.out.println(router);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void test2() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        try {
+            Router router = objectMapper.readValue(json, Router.class);
+            //router.initialize();
+
+            // Create sample orders
+            Order order1 = Order.builder()
+                    .cusip("111111111")
+                    .priceType("LIMIT_PRICE")
+                    .limitPrice(150)
+                    .build();
+
+            Order order2 = Order.builder()
+                    .cusip("444444444")
+                    .priceType("LIMIT_PRICE")
+                    .limitPrice(50)
+                    .build();
+
+            // Evaluate orders
+            String omsRoute1 = router.evaluate(order1);
+            String omsRoute2 = router.evaluate(order2);
+
+            System.out.println("Order 1 should be routed to: " + omsRoute1); // Should print "OMS_1"
+            System.out.println("Order 2 should be routed to: " + omsRoute2); // Should print "OMS_2"
+
         } catch (IOException e) {
             e.printStackTrace();
         }
